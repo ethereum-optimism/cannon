@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
+
 pragma solidity ^0.7.3;
 
 import "./lib/Lib_Keccak256.sol";
+import "./interfaces/IMIPSMemory.sol";
 
 contract MIPSMemory {
   // This state is global
@@ -11,7 +13,7 @@ contract MIPSMemory {
   // to only save the part we care about
   mapping(bytes32 => bytes) public preimage;
 
-  function AddPreimage(bytes calldata anything) public {
+  function addPreimage(bytes calldata anything) public {
     preimage[keccak256(anything)] = anything;
   }
 
@@ -19,7 +21,7 @@ contract MIPSMemory {
   mapping(address => uint64[25]) public largePreimage;
   // TODO: also track the offset into the largePreimage to know what to store
 
-  function AddLargePreimageInit() public {
+  function addLargePreimageInit() public {
     Lib_Keccak256.CTX memory c;
     Lib_Keccak256.keccak_init(c);
     largePreimage[msg.sender] = c.A;
@@ -27,7 +29,7 @@ contract MIPSMemory {
 
   // TODO: input 136 bytes, as many times as you'd like
   // Uses about 1M gas, 7352 gas/byte
-  function AddLargePreimageUpdate(uint64[17] calldata data) public {
+  function addLargePreimageUpdate(uint64[17] calldata data) public {
     // sha3_process_block
     Lib_Keccak256.CTX memory c;
     c.A = largePreimage[msg.sender];
@@ -39,7 +41,7 @@ contract MIPSMemory {
   }
 
   // TODO: input <136 bytes and do the end of hash | 0x01 / | 0x80
-  function AddLargePreimageFinal() public view returns (bytes32) {
+  function addLargePreimageFinal() public view returns (bytes32) {
     Lib_Keccak256.CTX memory c;
     c.A = largePreimage[msg.sender];
     // TODO: do this properly and save the hash
@@ -50,12 +52,15 @@ contract MIPSMemory {
                    (uint256(c.A[3]) << 0));
   }
 
-  function AddMerkleState(bytes32 stateHash, uint32 addr, uint32 value, string calldata proof) public {
+  function addMerkleState(bytes32 stateHash, uint32 addr, uint32 value, string calldata proof) public {
+    // Currently there is a compilation warning since `calldata proof` is not used. See TODO below however.
     // TODO: check proof
     state[stateHash][addr] = (1 << 32) | value;
   }
 
-  function WriteMemory(bytes32 stateHash, uint32 addr, uint32 value) public pure returns (bytes32) {
+  function writeMemory(bytes32 stateHash, uint32 addr, uint32 value) public pure returns (bytes32) {
+    // Currently there is a compilation warning since `uint32 value` is not used. In case we don't use it,
+    // we should remove it.
     require(addr & 3 == 0, "write memory must be 32-bit aligned");
     // TODO: do the real stateHash mutation
     bytes32 newstateHash = keccak256(abi.encodePacked(stateHash));
@@ -69,16 +74,16 @@ contract MIPSMemory {
   }
 
   // needed for preimage oracle
-  function ReadBytes32(bytes32 stateHash, uint32 addr) public view returns (bytes32) {
+  function readBytes32(bytes32 stateHash, uint32 addr) public view returns (bytes32) {
     uint256 ret = 0;
     for (uint32 i = 0; i < 32; i += 4) {
       ret <<= 32;
-      ret |= uint256(ReadMemory(stateHash, addr+i));
+      ret |= uint256(readMemory(stateHash, addr+i));
     }
     return bytes32(ret);
   }
 
-  function ReadMemory(bytes32 stateHash, uint32 addr) public view returns (uint32) {
+  function readMemory(bytes32 stateHash, uint32 addr) public view returns (uint32) {
     require(addr & 3 == 0, "read memory must be 32-bit aligned");
 
     // zero register is always 0
@@ -88,7 +93,7 @@ contract MIPSMemory {
 
     // MMIO preimage oracle
     if (addr >= 0x31000000 && addr < 0x32000000) {
-      bytes32 pihash = ReadBytes32(stateHash, 0x30001000);
+      bytes32 pihash = readBytes32(stateHash, 0x30001000);
       if (addr == 0x31000000) {
         return uint32(preimage[pihash].length);
       }

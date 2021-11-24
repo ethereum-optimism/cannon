@@ -115,17 +115,16 @@ func RamFromTrie(root common.Hash) map[uint32](uint32) {
 func RamToTrie(ram map[uint32](uint32)) common.Hash {
 	mt := trie.NewStackTrie(PreimageKeyValueWriter{})
 
-	sram := make([]uint64, len(ram))
-
+	addrs := make([]uint32, len(ram))
 	i := 0
-	for k, v := range ram {
-		sram[i] = (uint64(k) << 32) | uint64(v)
-		i += 1
+	for addr, _ := range ram {
+		addrs[i] = addr
+		i++
 	}
-	sort.Slice(sram, func(i, j int) bool { return sram[i] < sram[j] })
+	sort.Slice(addrs, func(i, j int) bool { return addrs[i] < addrs[j] })
 
-	for _, kv := range sram {
-		k, v := uint32(kv>>32), uint32(kv)
+	for _, addr := range addrs {
+		k, v := addr, ram[addr]
 		k >>= 2
 		//fmt.Printf("insert %x = %x\n", k, v)
 		tk := make([]byte, 4)

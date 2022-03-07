@@ -69,30 +69,8 @@ contract Challenge {
   // create challenge
   uint256 public lastChallengeId = 0;
 
+  // Emitted when a new challenge is created.
   event ChallengeCreate(uint256 challengeId);
-  function newChallengeTrusted(uint256 blockNumberN, bytes32 startState, bytes32 finalSystemState, uint256 stepCount) internal returns (uint256) {
-    uint256 challengeId = lastChallengeId;
-    Chal storage c = challenges[challengeId];
-    lastChallengeId += 1;
-
-    // the challenger arrives
-    c.challenger = msg.sender;
-
-    // the state is set 
-    c.blockNumberN = blockNumberN;
-    // NOTE: if they disagree on the start, 0->1 will fail
-    c.assertedState[0] = startState;
-    c.defendedState[0] = startState;
-    c.assertedState[stepCount] = finalSystemState;
-
-    // init the binary search
-    c.L = 0;
-    c.R = stepCount;
-
-    // find me later
-    emit ChallengeCreate(challengeId);
-    return challengeId;
-  }
 
   // helper function to determine what nodes we need
   function CallWithTrieNodes(address target, bytes calldata dat, bytes[] calldata nodes) public {
@@ -178,6 +156,34 @@ contract Challenge {
         "the final MIPS machine state asserts a different state root than your challenge");
 
     return newChallengeTrusted(blockNumberN, startState, finalSystemState, stepCount);
+  }
+
+  function newChallengeTrusted(
+      uint256 blockNumberN, bytes32 startState, bytes32 finalSystemState, uint256 stepCount)
+    internal
+    returns (uint256)
+  {
+    uint256 challengeId = lastChallengeId;
+    Chal storage c = challenges[challengeId];
+    lastChallengeId += 1;
+
+    // the challenger arrives
+    c.challenger = msg.sender;
+
+    // the state is set
+    c.blockNumberN = blockNumberN;
+    // NOTE: if they disagree on the start, 0->1 will fail
+    c.assertedState[0] = startState;
+    c.defendedState[0] = startState;
+    c.assertedState[stepCount] = finalSystemState;
+
+    // init the binary search
+    c.L = 0;
+    c.R = stepCount;
+
+    // find me later
+    emit ChallengeCreate(challengeId);
+    return challengeId;
   }
 
   // binary search

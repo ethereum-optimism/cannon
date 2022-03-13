@@ -1,0 +1,3 @@
+[submodule "minigeth"]
+	path = minigeth
+	url = git@github.com:ethereum-optimism/minigeth.git

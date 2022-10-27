@@ -55,13 +55,13 @@ mkdir -p /tmp/cannon
 minigeth/go-ethereum $TRANSITION_BLOCK
 
 # write out the golden MIPS minigeth start state
-mipsevm/mipsevm
+mipsevm/mipsevm --outputGolden
 
 # if you run into "digital envelope routines::unsupported", rerun after this:
 # export NODE_OPTIONS=--openssl-legacy-provider
 
 # generate MIPS checkpoints
-mipsevm/mipsevm $TRANSITION_BLOCK
+mipsevm/mipsevm --blockNumber=$TRANSITION_BLOCK
 
 # deploy the MIPS and challenge contracts
 npx hardhat run scripts/deploy.js

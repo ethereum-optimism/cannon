@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.15;
+pragma solidity ^0.7.3;
 pragma experimental ABIEncoderV2;
 
 import "./lib/Lib_RLPReader.sol";
@@ -23,7 +23,6 @@ interface IMIPSMemory {
     function AddTrieNode(bytes calldata anything) external;
 
     function ReadMemory(bytes32 stateHash, uint32 addr) external view returns (uint32);
-
     function ReadBytes32(bytes32 stateHash, uint32 addr) external view returns (bytes32);
 
     /// @notice Write 32 bits at the given address and returns the updated state hash.
@@ -50,7 +49,7 @@ contract Challenge {
     bytes32 public immutable globalStartState;
 
     constructor(IMIPS _mips, bytes32 _globalStartState) {
-        owner = payable(msg.sender);
+        owner = msg.sender;
         mips = _mips;
         mem = _mips.m();
         globalStartState = _globalStartState;
@@ -158,7 +157,7 @@ contract Challenge {
         ChallengeData storage c = challenges[challengeId];
 
         // A NEW CHALLENGER APPEARS
-        c.challenger = payable(msg.sender);
+        c.challenger = msg.sender;
         c.blockNumberN = blockNumberN;
         c.assertedState[0] = startState;
         c.defendedState[0] = startState;

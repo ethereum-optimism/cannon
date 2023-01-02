@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.15;
+pragma solidity ^0.7.3;
 
 import "./lib/Lib_Keccak256.sol";
 import "./lib/Lib_MerkleTrie.sol";

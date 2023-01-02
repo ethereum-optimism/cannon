@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.15;
+pragma solidity >0.5.0 <0.8.0;
 
 // https://chenglongma.com/10/simple-keccak/
 // https://github.com/firefly/wallet/blob/master/source/libs/ethers/src/keccak256.c
@@ -93,10 +93,9 @@ library Lib_Keccak256 {
     function sha3_xor_input(CTX memory c, bytes memory dat) internal pure {
         for (uint256 i = 0; i < 17; i++) {
             uint256 bo = i * 8;
-            c.A[i] ^= (uint64(uint8(dat[bo + 7])) << 56) | (uint64(uint8(dat[bo + 6])) << 48)
-                | (uint64(uint8(dat[bo + 5])) << 40) | (uint64(uint8(dat[bo + 4])) << 32)
-                | (uint64(uint8(dat[bo + 3])) << 24) | (uint64(uint8(dat[bo + 2])) << 16)
-                | (uint64(uint8(dat[bo + 1])) << 8) | (uint64(uint8(dat[bo + 0])) << 0);
+            c.A[i] ^= uint64(uint8(dat[bo + 7])) << 56 | uint64(uint8(dat[bo + 6])) << 48
+                | uint64(uint8(dat[bo + 5])) << 40 | uint64(uint8(dat[bo + 4])) << 32 | uint64(uint8(dat[bo + 3])) << 24
+                | uint64(uint8(dat[bo + 2])) << 16 | uint64(uint8(dat[bo + 1])) << 8 | uint64(uint8(dat[bo + 0])) << 0;
         }
     }
 

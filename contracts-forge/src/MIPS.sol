@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.15;
+pragma solidity ^0.7.3;
 
 import "./MIPSMemory.sol";
 
@@ -78,7 +78,7 @@ contract MIPS {
         bool isSigned = (dat >> (idx - 1)) != 0;
         uint256 signed = ((1 << (32 - idx)) - 1) << idx;
         uint256 mask = (1 << idx) - 1;
-        return uint32((dat & mask) | (isSigned ? signed : 0));
+        return uint32(dat & mask | (isSigned ? signed : 0));
     }
 
     function handleSyscall(bytes32 stateHash) internal returns (bytes32, bool) {
@@ -248,18 +248,13 @@ contract MIPS {
             // lo and hi registers
             // can write back
             if (func >= 0x10 && func < 0x1c) {
-                if (func == 0x10) {
-                    val = ReadMemory(stateHash, REG_HI);
-                } // mfhi
-                else if (func == 0x11) {
-                    storeAddr = REG_HI;
-                } // mthi
-                else if (func == 0x12) {
-                    val = ReadMemory(stateHash, REG_LO);
-                } // mflo
-                else if (func == 0x13) {
-                    storeAddr = REG_LO;
-                } // mtlo
+                if (func == 0x10) val = ReadMemory(stateHash, REG_HI); // mfhi
+
+                else if (func == 0x11) storeAddr = REG_HI; // mthi
+
+                else if (func == 0x12) val = ReadMemory(stateHash, REG_LO); // mflo
+
+                else if (func == 0x13) storeAddr = REG_LO; // mtlo
 
                 uint32 hi;
                 if (func == 0x18) {
@@ -314,27 +309,19 @@ contract MIPS {
             // transform ArithLogI
             // TODO: replace with table
             if (opcode >= 8 && opcode < 0xF) {
-                if (opcode == 8) {
-                    func = 0x20;
-                } // addi
-                else if (opcode == 9) {
-                    func = 0x21;
-                } // addiu
-                else if (opcode == 0xa) {
-                    func = 0x2a;
-                } // slti
-                else if (opcode == 0xb) {
-                    func = 0x2B;
-                } // sltiu
-                else if (opcode == 0xc) {
-                    func = 0x24;
-                } // andi
-                else if (opcode == 0xd) {
-                    func = 0x25;
-                } // ori
-                else if (opcode == 0xe) {
-                    func = 0x26;
-                } // xori
+                if (opcode == 8) func = 0x20; // addi
+
+                else if (opcode == 9) func = 0x21; // addiu
+
+                else if (opcode == 0xa) func = 0x2a; // slti
+
+                else if (opcode == 0xb) func = 0x2B; // sltiu
+
+                else if (opcode == 0xc) func = 0x24; // andi
+
+                else if (opcode == 0xd) func = 0x25; // ori
+
+                else if (opcode == 0xe) func = 0x26; // xori
                 opcode = 0;
             }
 
@@ -342,19 +329,19 @@ contract MIPS {
             if (opcode == 0) {
                 uint32 shamt = (insn >> 6) & 0x1f;
                 if (func < 0x20) {
-                    if (func >= 0x08) return rs;
-                    // jr/jalr/div + others
+                    if (func >= 0x08) return rs; // jr/jalr/div + others
+
                     // Shift and ShiftV
-                    else if (func == 0x00) return rt << shamt;
-                    // sll
-                    else if (func == 0x02) return rt >> shamt;
-                    // srl
-                    else if (func == 0x03) return SE(rt >> shamt, 32 - shamt);
-                    // sra
-                    else if (func == 0x04) return rt << (rs & 0x1F);
-                    // sllv
-                    else if (func == 0x06) return rt >> (rs & 0x1F);
-                    // srlv
+                    else if (func == 0x00) return rt << shamt; // sll
+
+                    else if (func == 0x02) return rt >> shamt; // srl
+
+                    else if (func == 0x03) return SE(rt >> shamt, 32 - shamt); // sra
+
+                    else if (func == 0x04) return rt << (rs & 0x1F); // sllv
+
+                    else if (func == 0x06) return rt >> (rs & 0x1F); // srlv
+
                     else if (func == 0x07) return SE(rt >> rs, 32 - rs); // srav
                 }
                 // 0x10-0x13 = mfhi, mthi, mflo, mtlo

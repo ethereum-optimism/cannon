@@ -1,7 +1,7 @@
-pragma solidity ^0.8.15;
+pragma solidity ^0.7.3;
 
-import {Test} from "forge-std/Test.sol";
-import {MIPSMemory} from "../src/MIPSMemory.sol";
+import { Test } from "forge-std/Test.sol";
+import { MIPSMemory } from "../src/MIPSMemory.sol";
 
 contract LibKeccak_Test is Test {
     MIPSMemory internal mm;
@@ -28,7 +28,7 @@ contract LibKeccak_Test is Test {
         }
 
         // Assert that the digests are equal
-        (bytes32 outHash, , ) = mm.AddLargePreimageFinal(testCase);
+        (bytes32 outHash,,) = mm.AddLargePreimageFinal(testCase);
         assertEq(outHash, keccak256(testCase));
     }
 
@@ -43,7 +43,7 @@ contract LibKeccak_Test is Test {
         // Set our preimage to the test case
         mm.AddLargePreimageUpdate(testCase);
 
-        (bytes32 outHash, , ) = mm.AddLargePreimageFinal(new bytes(0));
+        (bytes32 outHash,,) = mm.AddLargePreimageFinal(new bytes(0));
 
         // Assert that the digests are equal
         assertEq(outHash, keccak256(testCase));
@@ -61,14 +61,12 @@ contract LibKeccak_Test is Test {
         bytes32 dataHash = keccak256(data);
 
         // Add the preimage of data
-        (bytes32 outHash, uint64 len, uint64 _data) = mm.AddLargePreimageFinal(
-            data
-        );
+        (bytes32 outHash, uint64 len, uint64 _data) = mm.AddLargePreimageFinal(data);
 
         // Assert that the result of `AddLargePreimageFinal` is correct
         assertEq(outHash, dataHash);
-        assertEq(len, 11);
-        assertEq(_data, 0x6f20776f);
+        assertEq(uint256(len), 11);
+        assertEq(uint256(_data), 0x6f20776f);
 
         // Save the hash's preimage in the oracle
         mm.AddLargePreimageFinalSaved(data);
@@ -77,13 +75,13 @@ contract LibKeccak_Test is Test {
         // Check first type
         uint64 preLen = mm.GetPreimageLength(dataHash);
         uint64 pre = mm.GetPreimage(dataHash, 4);
-        assertEq(preLen, 11);
-        assertEq(pre, 0x6f20776f);
+        assertEq(uint256(preLen), 11);
+        assertEq(uint256(pre), 0x6f20776f);
 
         // Check other type
         preLen = mm.GetPreimageLength(dataHash);
         pre = mm.GetPreimage(dataHash, 0);
-        assertEq(preLen, 11);
-        assertEq(pre, 0x68656c6c);
+        assertEq(uint256(preLen), 11);
+        assertEq(uint256(pre), 0x68656c6c);
     }
 }

@@ -5,3 +5,6 @@ cache
 venv
 .idea
 *.log
+
+# contracts-forge
+contracts-forge/out

@@ -10,23 +10,23 @@ async function main() {
   }
   console.log("challenging block number", blockNumberN)
   // sadly this doesn't work on hosthat
-  const blockNp1 = await network.provider.send("eth_getBlockByNumber", ["0x"+(blockNumberN+1).toString(16), false])
+  const blockNp1 = await network.provider.send("eth_getBlockByNumber", ["0x" + (blockNumberN + 1).toString(16), false])
   console.log(blockNp1)
   const blockNp1Rlp = getBlockRlp(blockNp1)
 
   console.log(c.address, m.address, mm.address)
 
   // TODO: move this to lib, it's shared with the test
-  let startTrie = JSON.parse(fs.readFileSync(basedir+"/golden.json"))
+  let startTrie = JSON.parse(fs.readFileSync(basedir + "/golden.json"))
 
-  const assertionRootBinary = fs.readFileSync(basedir+"/0_"+blockNumberN.toString()+"/output")
+  const assertionRootBinary = fs.readFileSync(basedir + "/0_" + blockNumberN.toString() + "/output")
   var assertionRoot = "0x"
-  for (var i=0; i<32; i++) {
+  for (var i = 0; i < 32; i++) {
     hex = assertionRootBinary[i].toString(16);
-    assertionRoot += ("0"+hex).slice(-2);
+    assertionRoot += ("0" + hex).slice(-2);
   }
   console.log("asserting root", assertionRoot)
-  let finalTrie = JSON.parse(fs.readFileSync(basedir+"/0_"+blockNumberN.toString()+"/checkpoint_final.json"))
+  let finalTrie = JSON.parse(fs.readFileSync(basedir + "/0_" + blockNumberN.toString() + "/checkpoint_final.json"))
 
   let preimages = Object.assign({}, startTrie['preimages'], finalTrie['preimages']);
   const finalSystemState = finalTrie['root']
@@ -39,9 +39,9 @@ async function main() {
   for (n of nodes) {
     await mm.AddTrieNode(n)
   }
-// TODO: Setting the gas limit explicitly here shouldn't be necessary, for some
-//    weird reason (to be investigated), it is for L2.
-//  let ret = await c.initiateChallenge(...args)
+  // TODO: Setting the gas limit explicitly here shouldn't be necessary, for some
+  //    weird reason (to be investigated), it is for L2.
+  //  let ret = await c.initiateChallenge(...args)
   let ret = await c.initiateChallenge(...args, { gasLimit: 10_000_000 })
   let receipt = await ret.wait()
   // ChallengeCreated event

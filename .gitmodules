@@ -5,3 +5,6 @@
 [submodule "unicorn"]
 	path = unicorn
 	url = git@github.com:geohot/unicorn.git
+[submodule "contracts-forge/lib/forge-std"]
+	path = contracts-forge/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std

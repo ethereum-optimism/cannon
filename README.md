@@ -48,7 +48,7 @@ whole process of a fault proof, including the challenge game and single step ver
   step of the execution.
 
 In both cases, the challenger fails to challenge the block. Refer to the documentation string at the
-top of these file for more details regarding the scenario.
+top of these files for more details regarding the scenario.
 
 ## State Oracle API
 

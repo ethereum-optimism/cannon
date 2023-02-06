@@ -10,7 +10,7 @@ that the extra logic we added in
 reference-optimism-geth) does not break anything. It's also a good way to
 exercise our devnet infrastructure.
 
-Running the Cannon demo on a mainnet (L1) fork is a simple as doing:
+Running the Cannon demo on a mainnet (L1) fork is as simple as doing:
 
 ```bash
 # from repo root

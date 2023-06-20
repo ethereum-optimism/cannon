@@ -5,6 +5,15 @@
 
 ---
 
+**Cannon has moved to the [Optimism monorepo](https://github.com/ethereum-optimism/optimism/tree/develop/cannon)!**
+
+This repository is an archive of the following Cannon versions:
+- [`v0.1.0`](https://github.com/ethereum-optimism/cannon/tree/v0.1.0): the original Cannon, implemented by `geohot`.
+- [`v0.2.0`](https://github.com/ethereum-optimism/cannon/tree/v0.2.0): improved Cannon, with bugfixes and experimental demos.
+- [`v0.3.0`](https://github.com/ethereum-optimism/cannon/tree/v0.3.0): refactored proof-format, initial Optimism Bedrock support.
+
+## About
+
 Cannon *(cannon cannon cannon)* is an onchain MIPS instruction emulator.
 Cannon supports EVM-equivalent fault proofs by enabling Geth to run onchain,
 one instruction at a time, as part of an interactive dispute game.
@@ -15,32 +24,12 @@ one instruction at a time, as part of an interactive dispute game.
 * ...running compiled Go code
 * ...that runs an EVM
 
-For more information, see [Docs](./docs/README.md).
-
-## Directory Layout
-
-```
-contracts -- A MIPS emulator implementation, using merkleized state and a pre-image oracle.
-example   -- Example programs that can be run and proven with Cannon.
-extra     -- Extra scripts and legacy contracts, deprecated.
-mipsevm   -- Go tooling to test the onchain MIPS implementation, and generate proof data.
-diffmips  -- MIPS diff testing, to ensure correctness of the main Cannon implementation, with isolated dependencies. 
-```
-
-## Building
-
-### `contracts`
-
-The contracts are compiled with [`forge`](https://github.com/foundry-rs/foundry).
-```
-make contracts
-```
 
 ## License
 
 MIT, see [`LICENSE`](./LICENSE) file.
 
-**Note: This code is unaudited.**
+**Note: the code in this archived repository is unaudited.**
 In NO WAY should it be used to secure any monetary value before testing and auditing.
 This is experimental software, and should be treated as such.
 The authors of this project make no guarantees of security of ANY KIND.
